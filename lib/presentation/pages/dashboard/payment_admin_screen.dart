@@ -13,17 +13,13 @@ class PaymentScreenAdmin extends StatefulWidget {
   const PaymentScreenAdmin({super.key});
 
   @override
-  State<PaymentScreenAdmin> createState() =>
-      _PaymentScreenAdminState();
+  State<PaymentScreenAdmin> createState() => _PaymentScreenAdminState();
 }
 
 final ApiServices apiServices = ApiServices();
-final TagihanServices tagihanServices = TagihanServices(
-  apiServices,
-);
+final TagihanServices tagihanServices = TagihanServices(apiServices);
 
-class _PaymentScreenAdminState
-    extends State<PaymentScreenAdmin> {
+class _PaymentScreenAdminState extends State<PaymentScreenAdmin> {
   final List<Tagihan> _listTagihan = [];
   bool _isLoading = false;
   User? _user;
@@ -39,9 +35,9 @@ class _PaymentScreenAdminState
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('fetch tagihan failed: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('fetch tagihan failed: $e')));
     } finally {
       if (mounted) {
         setState(() {
@@ -73,13 +69,10 @@ class _PaymentScreenAdminState
       return Center(child: CircularProgressIndicator());
     }
 
-    if (_listTagihan.isEmpty) {
-      return Center(child: Text('Belum ada tagihan baru'));
-    }
-    return PaymentAdmin(
-      user: _user,
-      listTagihan: _listTagihan,
-    );
+    // if (_listTagihan.isEmpty) {
+    //   return Center(child: Text('Belum ada tagihan baru'));
+    // }
+    return PaymentAdmin(user: _user, listTagihan: _listTagihan);
   }
 }
 
@@ -96,41 +89,52 @@ class PaymentAdmin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if list is empty and user is NOT admin
+    if (_listTagihan.isEmpty && (_user == null || _user!.role != 'admin')) {
+      return Center(child: Text('Belum ada tagihan baru'));
+    }
+
     return Padding(
       padding: EdgeInsets.all(24),
       child: ListView.builder(
         itemCount:
             _user != null && _user!.role == 'admin'
-                ? _listTagihan.length +
-                    1 // extra item for button
+                ? (_listTagihan.isEmpty ? 1 : _listTagihan.length + 1)
                 : _listTagihan.length,
         itemBuilder: (context, index) {
-          if (_user != null &&
-              _user!.role == 'admin' &&
-              index == 0) {
+          if (_user != null && _user!.role == 'admin' && index == 0) {
             // Button at the top
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed:
-                        () =>
-                            context.push('/tagihan-create'),
-                    label: Text('Tagihan'),
-                    icon: Icon(Icons.create),
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () => context.push('/tagihan-create'),
+                        label: Text('Tagihan'),
+                        icon: Icon(Icons.create),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                if (_listTagihan.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Center(child: Text('Belum ada tagihan baru')),
+                  ),
+              ],
             );
           }
 
           // Adjust index for tagihan list
           final tagihanIndex =
-              _user != null && _user!.role == 'admin'
-                  ? index - 1
-                  : index;
+              _user != null && _user!.role == 'admin' ? index - 1 : index;
+
+          if (tagihanIndex < 0 || tagihanIndex >= _listTagihan.length) {
+            return SizedBox(); // Safety check
+          }
 
           final tagihan = _listTagihan[tagihanIndex];
           return Container(
@@ -138,17 +142,11 @@ class PaymentAdmin extends StatelessWidget {
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(
-                color: Colors.grey.shade300,
-              ),
+              border: Border.all(color: Colors.grey.shade300),
               borderRadius: BorderRadius.circular(8),
             ),
             child: ListTile(
-              onTap:
-                  () => context.push(
-                    '/tagihan-pay',
-                    extra: tagihan,
-                  ),
+              onTap: () => context.push('/tagihan-pay', extra: tagihan),
               title: Text(
                 tagihan.tagihanName ??
                     'Tagihan ${DateFormat('dd MMM yyyy').format(tagihan.tagihanDate)}',
@@ -156,9 +154,7 @@ class PaymentAdmin extends StatelessWidget {
               subtitle: Text(
                 'Rp. ${tagihan.totalPrice} - ${DateFormat('dd MMM yyyy').format(tagihan.tagihanDate)}',
               ),
-              trailing: Text(
-                '${tagihan.items.length} Pembayaran',
-              ),
+              trailing: Text('${tagihan.items.length} Pembayaran'),
             ), // Replace with your item UI
           );
         },
