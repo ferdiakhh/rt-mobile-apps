@@ -10,12 +10,12 @@ class UserService {
 
   UserService(this._apiServices);
 
-  Future<bool> signIn(String email, String password) async {
+  Future<bool> signIn(String kk, String password) async {
     try {
       String? token = await FirebaseMessaging.instance.getToken();
       final response = await _apiServices.dio.post(
         '/auth/login',
-        data: {'email': email, 'password': password, 'fcmToken': token},
+        data: {'kk': kk, 'password': password, 'fcmToken': token},
       );
       final data = response.data;
 
@@ -51,7 +51,7 @@ class UserService {
   }
 
   Future<bool> signUp(
-    String email,
+    String kk,
     String password,
     String name,
     String address,
@@ -60,7 +60,7 @@ class UserService {
       final response = await _apiServices.dio.post(
         '/auth/register',
         data: {
-          'email': email,
+          'kk': kk,
           'password': password,
           'name': name,
           'address': address,

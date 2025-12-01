@@ -19,7 +19,7 @@ final UserService userService = UserService(apiServices);
 
 class _SigninScreenState extends State<SigninScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _kkController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obsecureText = true;
@@ -30,7 +30,7 @@ class _SigninScreenState extends State<SigninScreen> {
           _isLoading = true;
         });
         final success = await userService.signIn(
-          _emailController.text,
+          _kkController.text,
           _passwordController.text,
         );
         if (success) {
@@ -46,10 +46,8 @@ class _SigninScreenState extends State<SigninScreen> {
           // Try to extract error message from response
           final response = e.response;
           if (response != null && response.data != null) {
-            if (response.data is Map &&
-                response.data['error'] != null) {
-              errorMessage =
-                  response.data['error'].toString();
+            if (response.data is Map && response.data['error'] != null) {
+              errorMessage = response.data['error'].toString();
             } else {
               errorMessage = response.data.toString();
             }
@@ -60,9 +58,9 @@ class _SigninScreenState extends State<SigninScreen> {
           errorMessage = e.toString();
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       } finally {
         if (mounted) {
           setState(() {
@@ -75,7 +73,7 @@ class _SigninScreenState extends State<SigninScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _kkController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -84,12 +82,7 @@ class _SigninScreenState extends State<SigninScreen> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: const Color.fromARGB(
-        255,
-        83,
-        127,
-        231,
-      ),
+      backgroundColor: const Color.fromARGB(255, 83, 127, 231),
       body: SizedBox(
         height: size.height,
         width: double.infinity,
@@ -100,9 +93,7 @@ class _SigninScreenState extends State<SigninScreen> {
               child: Container(
                 height: size.height * 0.38,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Color(0xFF4A74F0),
-                ),
+                decoration: BoxDecoration(color: Color(0xFF4A74F0)),
                 child: Image.asset(
                   'assets/img/login_bg.jpg',
                   fit: BoxFit.cover,
@@ -158,46 +149,36 @@ class _SigninScreenState extends State<SigninScreen> {
                     topRight: Radius.circular(20),
                   ),
                 ),
-                padding: EdgeInsets.only(
-                  top: 53,
-                  left: 20,
-                  right: 20,
-                ),
+                padding: EdgeInsets.only(top: 53, left: 20, right: 20),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Email
-                      Text('Email'),
+                      Text('Nomor Kartu Keluarga'),
                       SizedBox(height: 14),
                       TextFormField(
-                        controller: _emailController,
+                        controller: _kkController,
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Color.fromARGB(
-                            255,
-                            230,
-                            230,
-                            230,
-                          ),
+                          fillColor: Color.fromARGB(255, 230, 230, 230),
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(5),
                             borderSide: BorderSide.none,
                           ),
                         ),
                         validator: (value) {
-                          if (value == null ||
-                              value.isEmpty) {
-                            return 'Email is required';
+                          if (value == null || value.isEmpty) {
+                            return 'KK is required';
                           }
-                          if (!RegExp(
-                            r'^[^@]+@[^@]+\.[^@]+',
-                          ).hasMatch(value)) {
-                            return 'Enter a valid email';
+                          if (value.length != 16) {
+                            return 'KK must be 16 digits';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return 'KK must be numeric';
                           }
                           return null;
                         },
@@ -211,22 +192,15 @@ class _SigninScreenState extends State<SigninScreen> {
                         obscureText: _obsecureText,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor: Color.fromARGB(
-                            255,
-                            230,
-                            230,
-                            230,
-                          ),
+                          fillColor: Color.fromARGB(255, 230, 230, 230),
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(5),
                             borderSide: BorderSide.none,
                           ),
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
-                                _obsecureText =
-                                    !_obsecureText;
+                                _obsecureText = !_obsecureText;
                               });
                             },
                             icon: Icon(
@@ -237,8 +211,7 @@ class _SigninScreenState extends State<SigninScreen> {
                           ),
                         ),
                         validator: (value) {
-                          if (value == null ||
-                              value.isEmpty) {
+                          if (value == null || value.isEmpty) {
                             return 'Password is required';
                           }
                           return null;
@@ -248,14 +221,11 @@ class _SigninScreenState extends State<SigninScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed:
-                              _isLoading ? null : _submit,
+                          onPressed: _isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                ColorList.primary,
+                            backgroundColor: ColorList.primary,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(5),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
                           child:
@@ -263,27 +233,19 @@ class _SigninScreenState extends State<SigninScreen> {
                                   ? CircularProgressIndicator()
                                   : Text(
                                     'Login',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
+                                    style: TextStyle(color: Colors.white),
                                   ),
                         ),
                       ),
                       SizedBox(height: 31),
                       Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('Belum punya akun?'),
                           SizedBox(width: 4),
                           GestureDetector(
-                            onTap:
-                                () =>
-                                    context.go('/sign-up'),
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyles.link,
-                            ),
+                            onTap: () => context.go('/sign-up'),
+                            child: Text('Sign Up', style: TextStyles.link),
                           ),
                         ],
                       ),
@@ -320,6 +282,5 @@ class TopCurveClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) =>
-      false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

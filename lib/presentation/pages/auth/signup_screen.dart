@@ -21,7 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _kkController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obsecureText = true;
@@ -32,16 +32,16 @@ class _SignupScreenState extends State<SignupScreen> {
           _isLoading = true;
         });
         final data = await userService.signUp(
-          _emailController.text,
+          _kkController.text,
           _passwordController.text,
           _nameController.text,
           _addressController.text,
         );
         if (data) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Register success')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Register success')));
             context.go('/sign-in');
           }
         }
@@ -54,10 +54,8 @@ class _SignupScreenState extends State<SignupScreen> {
           // Try to extract error message from response
           final response = e.response;
           if (response != null && response.data != null) {
-            if (response.data is Map &&
-                response.data['error'] != null) {
-              errorMessage =
-                  response.data['error'].toString();
+            if (response.data is Map && response.data['error'] != null) {
+              errorMessage = response.data['error'].toString();
             } else {
               errorMessage = response.data.toString();
             }
@@ -68,9 +66,9 @@ class _SignupScreenState extends State<SignupScreen> {
           errorMessage = e.toString();
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(errorMessage)));
       } finally {
         if (mounted) {
           setState(() {
@@ -83,7 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _kkController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -96,9 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: size.height,
-            ),
+            constraints: BoxConstraints(minHeight: size.height),
             child: IntrinsicHeight(
               child: Stack(
                 children: [
@@ -109,8 +105,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Padding(
                       padding: EdgeInsets.only(left: 16),
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
                           Text(
@@ -124,9 +119,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           Text(
                             textAlign: TextAlign.justify,
                             'Daftar untuk menggunakan layanan iuran RT digital',
-                            style: TextStyle(
-                              color: ColorList.primary900,
-                            ),
+                            style: TextStyle(color: ColorList.primary900),
                           ),
                         ],
                       ),
@@ -139,12 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: Container(
                       height: 240,
                       decoration: const BoxDecoration(
-                        color: Color.fromARGB(
-                          255,
-                          66,
-                          102,
-                          185,
-                        ),
+                        color: Color.fromARGB(255, 66, 102, 185),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(200),
                           topRight: Radius.circular(150),
@@ -166,17 +154,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           topRight: Radius.circular(20),
                         ),
                       ),
-                      padding: EdgeInsets.only(
-                        top: 53,
-                        left: 20,
-                        right: 20,
-                      ),
+                      padding: EdgeInsets.only(top: 53, left: 20, right: 20),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             //name
                             Text('Nama Lengkap'),
@@ -185,24 +168,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               controller: _nameController,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Color.fromARGB(
-                                  255,
-                                  230,
-                                  230,
-                                  230,
-                                ),
+                                fillColor: Color.fromARGB(255, 230, 230, 230),
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  borderSide:
-                                      BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return 'Name is required';
                                 }
                                 return null;
@@ -212,28 +185,17 @@ class _SignupScreenState extends State<SignupScreen> {
                             Text('Alamat'),
                             SizedBox(height: 14),
                             TextFormField(
-                              controller:
-                                  _addressController,
+                              controller: _addressController,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Color.fromARGB(
-                                  255,
-                                  230,
-                                  230,
-                                  230,
-                                ),
+                                fillColor: Color.fromARGB(255, 230, 230, 230),
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  borderSide:
-                                      BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return 'Name is required';
                                 }
                                 return null;
@@ -241,36 +203,28 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             SizedBox(height: 14),
                             // Email
-                            Text('Email'),
+                            Text('Nomor Kartu Keluarga'),
                             SizedBox(height: 14),
                             TextFormField(
-                              controller: _emailController,
+                              controller: _kkController,
+                              keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Color.fromARGB(
-                                  255,
-                                  230,
-                                  230,
-                                  230,
-                                ),
+                                fillColor: Color.fromARGB(255, 230, 230, 230),
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  borderSide:
-                                      BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty) {
-                                  return 'Email is required';
+                                if (value == null || value.isEmpty) {
+                                  return 'KK is required';
                                 }
-                                if (!RegExp(
-                                  r'^[^@]+@[^@]+\.[^@]+',
-                                ).hasMatch(value)) {
-                                  return 'Enter a valid email';
+                                if (value.length != 16) {
+                                  return 'KK must be 16 digits';
+                                }
+                                if (int.tryParse(value) == null) {
+                                  return 'KK must be numeric';
                                 }
                                 return null;
                               },
@@ -282,43 +236,30 @@ class _SignupScreenState extends State<SignupScreen> {
                             SizedBox(height: 14),
                             // Password
                             TextFormField(
-                              controller:
-                                  _passwordController,
+                              controller: _passwordController,
                               obscureText: _obsecureText,
                               decoration: InputDecoration(
                                 filled: true,
-                                fillColor: Color.fromARGB(
-                                  255,
-                                  230,
-                                  230,
-                                  230,
-                                ),
+                                fillColor: Color.fromARGB(255, 230, 230, 230),
                                 border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                        5,
-                                      ),
-                                  borderSide:
-                                      BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5),
+                                  borderSide: BorderSide.none,
                                 ),
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(() {
-                                      _obsecureText =
-                                          !_obsecureText;
+                                      _obsecureText = !_obsecureText;
                                     });
                                   },
                                   icon: Icon(
                                     _obsecureText
-                                        ? Icons
-                                            .visibility_off
+                                        ? Icons.visibility_off
                                         : Icons.visibility,
                                   ),
                                 ),
                               ),
                               validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty) {
+                                if (value == null || value.isEmpty) {
                                   return 'Password is required';
                                 }
                                 return null;
@@ -332,13 +273,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               child: ElevatedButton(
                                 onPressed: _submit,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      ColorList.primary,
+                                  backgroundColor: ColorList.primary,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(
-                                          5,
-                                        ),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
                                 ),
                                 child:
@@ -346,11 +283,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ? CircularProgressIndicator()
                                         : Text(
                                           'Sign Up',
-                                          style: TextStyle(
-                                            color:
-                                                Colors
-                                                    .white,
-                                          ),
+                                          style: TextStyle(color: Colors.white),
                                         ),
                               ),
                             ),
@@ -358,20 +291,13 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 16),
 
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text('Sudah punya akun?'),
                                 SizedBox(width: 4),
                                 GestureDetector(
-                                  onTap:
-                                      () => context.go(
-                                        '/sign-in',
-                                      ),
-                                  child: Text(
-                                    'Log In',
-                                    style: TextStyles.link,
-                                  ),
+                                  onTap: () => context.go('/sign-in'),
+                                  child: Text('Log In', style: TextStyles.link),
                                 ),
                               ],
                             ),
